@@ -1,0 +1,89 @@
+<html>
+<body>
+<pre>
+<h1>�Vision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: ��Vision V5.38.0.0
+Copyright (C) 2022 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: chen jehu, DJI, LIC=LSNXV-P1FJZ-741S0-BMVXH-80HQR-25NXV
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Plus  Version: 5.38.0.0
+Toolchain Path:  D:\Program Files(x86)\Keil_v5\ARM\ARMCLANG\Bin
+C Compiler:      ArmClang.exe V6.19
+Assembler:       Armasm.exe V6.19
+Linker/Locator:  ArmLink.exe V6.19
+Library Manager: ArmAr.exe V6.19
+Hex Converter:   FromElf.exe V6.19
+CPU DLL:         SARMCM3.DLL V5.38.0.0
+Dialog DLL:      DCM.DLL V1.17.5.0
+Target DLL:      CMSIS_AGDI.dll V1.33.15.0
+Dialog DLL:      TCM.DLL V1.56.4.0
+ 
+<h2>Project:</h2>
+E:\CAR\RT1064\carDemoBasic\project\mdk\rt1064.uvprojx
+Project File Date:  05/04/2025
+
+<h2>Output:</h2>
+*** Using Compiler 'V6.19', folder: 'D:\Program Files(x86)\Keil_v5\ARM\ARMCLANG\Bin'
+Build target 'nor_sdram_zf_dtcm'
+../code/camera_settings.c(11): warning: 'extern' variable has an initializer [-Wextern-initializer]
+extern int16 mt9v03x_set_config_buffer[10][2] =
+             ^
+1 warning generated.
+compiling camera_settings.c...
+compiling MotorDriver.c...
+compiling gyro.c...
+compiling uart.c...
+compiling switch.c...
+../code/key.c(3): warning: excess elements in struct initializer [-Wexcess-initializers]
+volatile KEY_MSG_t keymsg = {KEY_L, KEY_R, KEY_U, KEY_D, KEY_B}; // <B0><B4><BC><FC><CF><FB>Ϣ<BD>ṹ<CC><E5>
+                                           ^~~~~
+../code/key.c(3): warning: implicit conversion from enumeration type 'KEY_e' to different enumeration type 'KEY_STATUS_e' [-Wenum-conversion]
+volatile KEY_MSG_t keymsg = {KEY_L, KEY_R, KEY_U, KEY_D, KEY_B}; // <B0><B4><BC><FC><CF><FB>Ϣ<BD>ṹ<CC><E5>
+                            ~       ^~~~~
+2 warnings generated.
+compiling key.c...
+compiling pid.c...
+../user/src/main.c(70): warning: incompatible pointer types passing 'float[5]' to parameter of type 'const uint8 *' (aka 'const unsigned char *') [-Wincompatible-pointer-types]
+  uart_write_buffer(UART_INDEX, data, sizeof(float) * 5); // ͨ<B9><FD><B4><AE><BF>ڴ<AB><CA><E4><CA><FD><BE>ݣ<AC>ǰ<C3>濪<B6><E0><B4><F3><B5><C4><CA><FD><D7>飬<BA><F3><C3><E6>ռ<B6><E0><B4><U+F3936><C8>
+                                ^~~~
+../../libraries/zf_driver\zf_driver_uart.h(110): note: passing argument to parameter 'buff' here
+void    uart_write_buffer                   (uart_index_enum uartn, const uint8 *buff, uint32 len);
+                                                                                 ^
+../user/src/main.c(127): warning: passing 'volatile KEY_MSG_t *' to parameter of type 'KEY_MSG_t *' discards qualifiers [-Wincompatible-pointer-types-discards-qualifiers]
+  if (get_key_msg(&keymsg) == 1)
+                  ^~~~~~~
+../code\key.h(50): note: passing argument to parameter 'keymsg' here
+uint8 get_key_msg(KEY_MSG_t *keymsg); // <BB><F1>ȡ<B0><B4><BC><FC><CF><FB>Ϣ<A3><AC><B7><B5><BB><D8>1<B1><ED>ʾ<D3>а<B4><BC><FC><CF><FB>Ϣ<A3><AC>0Ϊ<CE>ް<B4><BC><FC><CF><FB>Ϣ
+                             ^
+2 warnings generated.
+compiling main.c...
+compiling encoder.c...
+../code/menu.c(489): warning: enumeration value 'KEY_MAX' not handled in switch [-Wswitch]
+        switch (keymsg.key)
+                ^~~~~~~~~~
+1 warning generated.
+compiling menu.c...
+compiling island.c...
+compiling isr.c...
+compiling image.c...
+linking...
+Program Size: Code=77560 RO-data=8308 RW-data=608 ZI-data=52544  
+".\Objects\rt1064.axf" - 0 Error(s), 6 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: NXP
+                https://mcuxpresso.nxp.com/cmsis_pack/repo/NXP.MIMXRT1064_DFP.15.0.0.pack
+                NXP.MIMXRT1064_DFP.15.0.0
+                Device Family Pack for MIMXRT1064
+
+<h2>Collection of Component include folders:</h2>
+  D:/Program Files(x86)/Keil_v5/ARM/PACK/NXP/MIMXRT1064_DFP/15.0.0
+
+<h2>Collection of Component Files used:</h2>
+Build Time Elapsed:  00:00:03
+</pre>
+</body>
+</html>
