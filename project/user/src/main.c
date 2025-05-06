@@ -81,7 +81,9 @@ int main(void)
   encoderInit();
   servoInit();
   motorInit();
+  uartInitAllCamPeriph();                                                                 // 初始化所有串口
   uart_init(DEBUG_UART_INDEX, DEBUG_UART_BAUDRATE, DEBUG_UART_TX_PIN, DEBUG_UART_RX_PIN); // 串口初始化
+  uart_rx_interrupt(UART_1, ZF_ENABLE);                                                   // 打开串口接收中断
   mt9v03x_init();
   imu963ra_init();   // IMU初始化
   zeroPointDetect(); // 零点漂移检测
@@ -105,16 +107,17 @@ int main(void)
   // 此处编写用户代码 例如外设初始化代码等
   while (1)
   {
-    ips200_show_string(0, 0, "Encoder1: ");
-    ips200_show_int(0, 16, encoder_data_R, 4);
+    //   ips200_show_string(0, 0, "Encoder1: ");
+    //   ips200_show_int(0, 16, encoder_data_R, 4);
 
-    ips200_show_string(0, 32, "Encoder2: ");
-    ips200_show_int(0, 48, encoder_data_B, 4);
+    //   ips200_show_string(0, 32, "Encoder2: ");
+    //   ips200_show_int(0, 48, encoder_data_B, 4);
 
-    ips200_show_string(0, 64, "Encoder3: ");
-    ips200_show_int(0, 80, encoder_data_L, 4);
+    //   ips200_show_string(0, 64, "Encoder3: ");
+    //   ips200_show_int(0, 80, encoder_data_L, 4);
     // uart_write_string(DEBUG_UART_INDEX, "FayzGaming Presents\r\n");
-    ips200_show_int(0, 96, FJ_Angle, 4); // 显示陀螺仪角度
+    // ips200_show_int(0, 96, FJ_Angle, 4); // 显示陀螺仪角度
+    uartOpenMVReceiveData();
     // 此处编写需要循环执行的代码
 
     // 此处编写需要循环执行的代码
@@ -137,10 +140,8 @@ void pit_handler(void)
   encoder_data_B = encoder_get_count(ENCODER_2); // 获取编码器计数
   encoder_data_L = encoder_get_count(ENCODER_3); // 获取编码器计数
 
-  pwmL = PID_L(BaseSpeed, encoder_data_L);
-  setLeftMotorSpeed(pwmL); // 设置电机速度
   // Vofa_data(pwmL, BaseSpeed, 0, 0, 0);     // 发送数据到串口
-  Vofa_data(pwmL, BaseSpeed, encoder_data_L, 0, 0); // 发送数据到串口
+  // Vofa_data(pwmL, BaseSpeed, encoder_data_L, 0, 0); // 发送数据到串口
 
   encoder_clear_count(ENCODER_1); // 清空编码器计数
   encoder_clear_count(ENCODER_2); // 清空编码器计数
@@ -148,4 +149,11 @@ void pit_handler(void)
 
   gyroscopeGetData();
   getGyroscopeAngle(); // 获取陀螺仪角度
+}
+
+void openmv_rx_handler(void)
+{
+  // 接收数据
+  uart_query_byte(OPENMV_UART_INDEX, &get_data);           // 接收数据
+  fifo_write_buffer(&openmv_uart_data_fifo, &get_data, 1); // 将接收到的数据写入FIFO
 }
