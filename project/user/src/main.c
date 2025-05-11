@@ -40,6 +40,16 @@
 // 第二步 project->clean  等待下方进度条走完
 
 // 本例程是开源库移植用空工程
+
+typedef struct
+{
+  uint8 res_x1;
+  uint8 res_y1;
+  uint8 res_x2;
+  uint8 res_y2;
+} od_result_t;
+volatile od_result_t od_result[10];
+
 int16 encoder_data_R = 0;
 int16 encoder_data_B = 0;
 int16 encoder_data_L = 0;
@@ -117,7 +127,11 @@ int main(void)
     //   ips200_show_int(0, 80, encoder_data_L, 4);
     // uart_write_string(DEBUG_UART_INDEX, "FayzGaming Presents\r\n");
     // ips200_show_int(0, 96, FJ_Angle, 4); // 显示陀螺仪角度
-    uartOpenMVReceiveData();
+    // uartOpenMVReceiveData();
+    ips200_show_uint(0, 0, od_result[0].res_x1, 3);  // 显示接收到的数据
+    ips200_show_uint(0, 16, od_result[0].res_y1, 3); // 显示接收到的数据
+    ips200_show_uint(0, 32, od_result[0].res_x2, 3); // 显示接收到的数据
+    ips200_show_uint(0, 48, od_result[0].res_y2, 3); // 显示接收到的数据
     // 此处编写需要循环执行的代码
 
     // 此处编写需要循环执行的代码
@@ -147,13 +161,34 @@ void pit_handler(void)
   encoder_clear_count(ENCODER_2); // 清空编码器计数
   encoder_clear_count(ENCODER_3); // 清空编码器计数
 
-  gyroscopeGetData();
-  getGyroscopeAngle(); // 获取陀螺仪角度
+  // gyroscopeGetData();
+  // getGyroscopeAngle(); // 获取陀螺仪角度
 }
 
 void openmv_rx_handler(void)
 {
   // 接收数据
-  uart_query_byte(OPENMV_UART_INDEX, &get_data);           // 接收数据
-  fifo_write_buffer(&openmv_uart_data_fifo, &get_data, 1); // 将接收到的数据写入FIFO
+  uint8 get_data = 0; // 接收数据变量
+  uint32 temp_length = 0;
+  uint8 od_num = 0;
+  uart_query_byte(OPENMV_UART_INDEX, &get_data);
+  {
+    fifo_write_buffer(&openmv_uart_data_fifo, &get_data, 1);
+  }
+
+  if (102 == get_data)
+  {
+    // 读取第1个数据，用于判断帧头，使用完清除此数据
+    temp_length = 1;
+    fifo_read_buffer(&openmv_uart_data_fifo, fifo_get_data, &temp_length, FIFO_READ_AND_CLEAN);
+    if (101 == fifo_get_data[0])
+    {
+      // 读取8个数据，用于获取目标数据，然后转移到结构体数组中
+      uint8 odn_num = 0;
+      temp_length = 4;
+      fifo_read_buffer(&openmv_uart_data_fifo, fifo_get_data, &temp_length, FIFO_READ_AND_CLEAN);
+      memcpy((uint8 *)(&od_result[od_num]), fifo_get_data, 4);
+    }
+    fifo_clear(&openmv_uart_data_fifo);
+  }
 }

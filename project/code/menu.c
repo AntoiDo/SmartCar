@@ -39,13 +39,9 @@ void Uart_Test()
 {
     uartOpenMVSendString("Hello, MCX!\r\n");
     ips200_show_string(0, 0, "Send OK!");
-    system_delay_ms(100);
-    if (keymsg.status == KEY_DOWN)
-    {
-        system_delay_ms(10);
-        if (keymsg.status == KEY_DOWN)
-            return;
-    }
+    system_delay_ms(1000);
+    ips200_show_string(0, 0, "Go back to menu!");
+    return;
 }
 
 void EEPROM_Test()
