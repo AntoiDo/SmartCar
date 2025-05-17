@@ -122,9 +122,9 @@
 //===================================================应用组件层===================================================
 
 //===================================================用户自定义文件===================================================
-#include <MotorDriver.h>
-#include <key.h>
-#include <menu.h>
+#include "MotorDriver.h"
+#include "key.h"
+#include "menu.h"
 #include "switch.h"
 #include "camera_settings.h"
 #include "image.h"
@@ -133,6 +133,16 @@
 #include "encoder.h"
 #include "uart.h"
 #include "gyro.h"
+#include "push.h"
 //===================================================用户自定义文件===================================================
 
+typedef struct
+{
+    uint8_t res_x1;
+    uint8_t res_y1;
+    uint8_t res_x2;
+    uint8_t res_y2;
+} od_result_t;
+
+extern volatile od_result_t od_result[10];
 #endif

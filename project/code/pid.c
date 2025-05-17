@@ -92,19 +92,20 @@ int PID_L(int setSpeed, int realSpeed)
     volatile static int out_increment;
     volatile static int ek, ek1, lastek; // e(k), e(k-1)
 
-    float kp = 1;
-    float ki = 0.1;
-    float kd = 0.01;
+    // 空转时候kp=1.5，ki=0.1的时候效果很好
+    float kp = 50;
+    float ki = 0.6;
+    float kd = 0;
     lastek = ek1;
     ek1 = ek;
     ek = setSpeed - realSpeed;
     out_increment = (int)(kp * (ek - ek1) + ki * ek + kd * (ek - 2 * ek1 + lastek));
     out += out_increment;
 
-    if (out >= 3500) // ????
-        out = 3500;
-    else if (out <= -3500)
-        out = -3500;
+    if (out >= SPEED_MAX) // ????
+        out = SPEED_MAX;
+    else if (out <= SPEED_MIN)
+        out = SPEED_MIN;
     return (int)out;
 }
 
@@ -123,19 +124,19 @@ int PID_R(int setSpeed, int realSpeed)
     volatile static int out_increment;
     volatile static int ek, ek1, lastek; // e(k), e(k-1)
 
-    float kp = 1;
-    float ki = 0.1;
-    float kd = 0.01;
+    float kp = 50;
+    float ki = 0.5;
+    float kd = 0;
     lastek = ek1;
     ek1 = ek;
     ek = setSpeed - realSpeed;
     out_increment = (int)(kp * (ek - ek1) + ki * ek + kd * (ek - 2 * ek1 + lastek));
     out += out_increment;
 
-    if (out >= 3500) // ????
-        out = 3500;
-    else if (out <= -3500)
-        out = -3500;
+    if (out >= SPEED_MAX) // ????
+        out = SPEED_MAX;
+    else if (out <= SPEED_MIN)
+        out = SPEED_MIN;
     return (int)out;
 }
 
@@ -144,19 +145,19 @@ int PID_B(int setSpeed, int realSpeed)
     volatile static int out;
     volatile static int out_increment;
     volatile static int ek, ek1, lastek; // e(k), e(k-1)
-
-    float kp = 1;
-    float ki = 0.1;
-    float kd = 0.01;
+    // KP=50, KI=1.1
+    float kp = 50;
+    float ki = 1.1;
+    float kd = 1;
     lastek = ek1;
     ek1 = ek;
     ek = setSpeed - realSpeed;
     out_increment = (int)(kp * (ek - ek1) + ki * ek + kd * (ek - 2 * ek1 + lastek));
     out += out_increment;
 
-    if (out >= 3500)
-        out = 3500;
-    else if (out <= -3500)
-        out = -3500;
+    if (out >= SPEED_MAX) // ????
+        out = SPEED_MAX;
+    else if (out <= SPEED_MIN)
+        out = SPEED_MIN;
     return (int)out;
 }

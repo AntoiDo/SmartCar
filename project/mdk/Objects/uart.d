@@ -105,6 +105,7 @@
   ..\..\libraries\components\sdmmc\common\fsl_sdmmc_spec.h \
   ..\..\libraries\components\sdmmc\sdmmc_config.h \
   ..\..\libraries\sdk\board\clock_config.h ..\code\MotorDriver.h \
+  D:\Program\ Files(x86)\Keil_v5\ARM\ARMCLANG\Bin\..\include\math.h \
   ..\code\key.h ..\code\menu.h ..\code\switch.h \
   ..\code\camera_settings.h ..\code\image.h ..\code\island.h \
-  ..\code\pid.h ..\code\encoder.h ..\code\gyro.h
+  ..\code\pid.h ..\code\encoder.h ..\code\gyro.h ..\code\push.h

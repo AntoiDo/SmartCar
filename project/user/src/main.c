@@ -41,13 +41,6 @@
 
 // 本例程是开源库移植用空工程
 
-typedef struct
-{
-  uint8 res_x1;
-  uint8 res_y1;
-  uint8 res_x2;
-  uint8 res_y2;
-} od_result_t;
 volatile od_result_t od_result[10];
 
 int16 encoder_data_R = 0;
@@ -55,14 +48,24 @@ int16 encoder_data_B = 0;
 int16 encoder_data_L = 0;
 int Lspeed, Bspeed, Rspeed;
 
-uint8 pwmL;
-uint8 pwmR;
-uint16 BaseSpeed = 100;
+uint16 BaseSpeed = 200;
+
 #define UART_INDEX (DEBUG_UART_INDEX)
 #define UART_BAUDRATE (DEBUG_UART_BAUDRATE)
 #define UART_TX_PIN (DEBUG_UART_TX_PIN)
 #define UART_RX_PIN (DEBUG_UART_RX_PIN)
 
+/**
+ * @brief  显示红色方块角点坐标
+ *
+ */
+void showRedBlock()
+{
+  ips200_show_uint(0, 0, od_result[0].res_x1, 3);  // 显示接收到的数据
+  ips200_show_uint(0, 16, od_result[0].res_y1, 3); // 显示接收到的数据
+  ips200_show_uint(0, 32, od_result[0].res_x2, 3); // 显示接收到的数据
+  ips200_show_uint(0, 48, od_result[0].res_y2, 3); // 显示接收到的数据
+}
 /**
  * @brief 发送数据到串口
  * @note 对应串口是COM7
@@ -87,7 +90,7 @@ int main(void)
   debug_init();                  // 调试端口初始化
   Key_init(KEY_MAX);
   switch_init();
-  BEEP_init();
+  // BEEP_init();
   encoderInit();
   servoInit();
   motorInit();
@@ -95,9 +98,9 @@ int main(void)
   uart_init(DEBUG_UART_INDEX, DEBUG_UART_BAUDRATE, DEBUG_UART_TX_PIN, DEBUG_UART_RX_PIN); // 串口初始化
   uart_rx_interrupt(UART_1, ZF_ENABLE);                                                   // 打开串口接收中断
   mt9v03x_init();
-  imu963ra_init();   // IMU初始化
-  zeroPointDetect(); // 零点漂移检测
-  pit_ms_init(PIT_CH0, 10);
+  // imu963ra_init();   // IMU初始化
+  // zeroPointDetect(); // 零点漂移检测
+
   ips200_set_dir(IPS200_CROSSWISE);
   ips200_set_font(IPS200_8X16_FONT);
   ips200_set_color(RGB565_RED, RGB565_BLACK);
@@ -105,33 +108,40 @@ int main(void)
   // 此处编写用户代码 例如外设初始化代码等
   ips200_show_string(0, 0, "seekfree");
   system_delay_ms(1000);
+  pit_ms_init(PIT_CH0, 10);
   MainMenu_Set();
   // setLeftMotorSpeed(BaseSpeed);                 // 设置电机速度
-  gpio_set_level(MotorL_DIR, 0); // 测试电机
+  // gpio_set_level(MotorL_DIR, 0); // 测试电机
   // gpio_set_level(MotorR_DIR, 0);
-  pwm_set_duty(MotorL_PWM, 700);
+  // pwm_set_duty(MotorL_PWM, 1000);
   // pwm_set_duty(MotorR_PWM, 1000);
-  // setServoAngle(1000); // 给的是逆时针
+  setServoAngle(1000); // 给的是顺
   int Threshold;
   float error = 0;
   // 此处编写用户代码 例如外设初始化代码等
   while (1)
   {
-    //   ips200_show_string(0, 0, "Encoder1: ");
-    //   ips200_show_int(0, 16, encoder_data_R, 4);
+    detectRedBlock();
+    detectBlockStable();
+    if (Push_State && !Stable_State)
+    {
+      Kinematic_Analysis(getCenterOffset_XAxis(), getCenterOffset_YAxis(), 0);
+    }
+    else if (Stable_State)
+    {
+      Brake();
+    }
+    ips200_show_int(0, 0, Push_State, 3);               // 显示接收到的数据
+    ips200_show_int(0, 16, Stable_State, 3);            // 显示接收到的数据
+    ips200_show_int(0, 32, getCenterOffset_XAxis(), 3); // 显示接收到的数据
+    ips200_show_int(0, 48, getCenterOffset_YAxis(), 3); // 显示接收到的数据
 
-    //   ips200_show_string(0, 32, "Encoder2: ");
-    //   ips200_show_int(0, 48, encoder_data_B, 4);
-
-    //   ips200_show_string(0, 64, "Encoder3: ");
-    //   ips200_show_int(0, 80, encoder_data_L, 4);
-    // uart_write_string(DEBUG_UART_INDEX, "FayzGaming Presents\r\n");
-    // ips200_show_int(0, 96, FJ_Angle, 4); // 显示陀螺仪角度
+    ips200_show_uint(0, 64, od_result[0].res_x1, 3);  // 显示接收到的数据
+    ips200_show_uint(0, 80, od_result[0].res_y1, 3);  // 显示接收到的数据
+    ips200_show_uint(0, 96, od_result[0].res_x2, 3);  // 显示接收到的数据
+    ips200_show_uint(0, 112, od_result[0].res_y2, 3); // 显示接收到的数据
     // uartOpenMVReceiveData();
-    ips200_show_uint(0, 0, od_result[0].res_x1, 3);  // 显示接收到的数据
-    ips200_show_uint(0, 16, od_result[0].res_y1, 3); // 显示接收到的数据
-    ips200_show_uint(0, 32, od_result[0].res_x2, 3); // 显示接收到的数据
-    ips200_show_uint(0, 48, od_result[0].res_y2, 3); // 显示接收到的数据
+
     // 此处编写需要循环执行的代码
 
     // 此处编写需要循环执行的代码
@@ -151,18 +161,28 @@ void pit_handler(void)
   }
 
   encoder_data_R = encoder_get_count(ENCODER_1); // 获取编码器计数
-  encoder_data_B = encoder_get_count(ENCODER_2); // 获取编码器计数
-  encoder_data_L = encoder_get_count(ENCODER_3); // 获取编码器计数
 
-  // Vofa_data(pwmL, BaseSpeed, 0, 0, 0);     // 发送数据到串口
-  // Vofa_data(pwmL, BaseSpeed, encoder_data_L, 0, 0); // 发送数据到串口
+  encoder_data_B = encoder_get_count(ENCODER_2);  // 获取编码器计数
+  encoder_data_L = -encoder_get_count(ENCODER_3); // 获取编码器计数   保证向前走的轮子为正值
+  if (Push_State && !Stable_State)                // 要推并且不稳定
+  {
+    int Left_Speed = PID_L(Calculate_Speed_Left, encoder_data_L);
+    int Right_Speed = PID_R(Calculate_Speed_Right, encoder_data_R);
+    int Buttom_Speed = PID_B(Calculate_Speed_Buttom, encoder_data_B);
+    //  setLeftMotorSpeed(Left_Speed);
+    //  setRightMotorSpeed(Right_Speed);
+    //  setServoAngle(Buttom_Speed);
+  }
 
+  //  Vofa_data(Left_Speed, BaseSpeed, encoder_data_L, 0, 0); // 发送数据到串口
+  // Vofa_data(Right_Speed, -50, encoder_data_R, 0, 0); // 发送数据到串口
+  // Vofa_data(Buttom_Speed, BaseSpeed, encoder_data_B, 0, 0);
   encoder_clear_count(ENCODER_1); // 清空编码器计数
   encoder_clear_count(ENCODER_2); // 清空编码器计数
   encoder_clear_count(ENCODER_3); // 清空编码器计数
 
   // gyroscopeGetData();
-  // getGyroscopeAngle(); // 获取陀螺仪角度
+  // getGyroscopeAngle(); // 获取陀螺仪角度........................................................................
 }
 
 void openmv_rx_handler(void)
@@ -176,12 +196,12 @@ void openmv_rx_handler(void)
     fifo_write_buffer(&openmv_uart_data_fifo, &get_data, 1);
   }
 
-  if (102 == get_data)
+  if (0x02 == get_data)
   {
     // 读取第1个数据，用于判断帧头，使用完清除此数据
     temp_length = 1;
     fifo_read_buffer(&openmv_uart_data_fifo, fifo_get_data, &temp_length, FIFO_READ_AND_CLEAN);
-    if (101 == fifo_get_data[0])
+    if (0x01 == fifo_get_data[0])
     {
       // 读取8个数据，用于获取目标数据，然后转移到结构体数组中
       uint8 odn_num = 0;

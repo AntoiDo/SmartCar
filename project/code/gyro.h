@@ -4,7 +4,7 @@
 #include "zf_common_headfile.h"
 
 /* 灵敏度 */
-#define GYRO_SENS (5 * 1 / 16.4) // ≈0.3049 °/s/LSB
+#define GYRO_SENS (1 * 1 / 16.4) // ≈0.3049 °/s/LSB
 #define ACCE_SENS (90.0 / 4096)
 #define DT (0.01)
 

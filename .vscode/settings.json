@@ -11,6 +11,8 @@
         "zf_driver_pwm.h": "c",
         "zf_common_typedef.h": "c",
         "pid.h": "c",
-        "uart.h": "c"
+        "uart.h": "c",
+        "cmath": "c",
+        "push.h": "c"
     }
 }

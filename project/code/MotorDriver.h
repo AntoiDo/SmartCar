@@ -2,7 +2,12 @@
 #define MOTORDRIVER_H
 
 #include <zf_common_headfile.h>
+#include <math.h>
 #define MAX_DUTY (50) // 最大 MAX_DUTY% 占空比
+
+extern int8_t Calculate_Speed_Left;
+extern int8_t Calculate_Speed_Right;
+extern int8_t Calculate_Speed_Buttom;
 
 // PWM连接的是en口，DIR连的才是PH
 
@@ -21,6 +26,8 @@ void motorInit();
 void setMotorSpeed(int stdSpeed, int speedBias);
 void setLeftMotorSpeed(int givenSpeed);
 void setRightMotorSpeed(int givenSpeed);
-
 void setServoAngle(int angle);
+
+void Brake();
+void Kinematic_Analysis(float Vx, float Vy, float V_angle);
 #endif
