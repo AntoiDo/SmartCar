@@ -41,14 +41,9 @@
 
 // 本例程是开源库移植用空工程
 
-volatile od_result_t od_result[10];
-
 int16 encoder_data_R = 0;
 int16 encoder_data_B = 0;
 int16 encoder_data_L = 0;
-int Lspeed, Bspeed, Rspeed;
-
-uint16 BaseSpeed = 200;
 
 #define UART_INDEX (DEBUG_UART_INDEX)
 #define UART_BAUDRATE (DEBUG_UART_BAUDRATE)
@@ -118,6 +113,7 @@ int main(void)
   setServoAngle(1000); // 给的是顺
   int Threshold;
   float error = 0;
+  Kinematic_Analysis(150, -150, 0);
   // 此处编写用户代码 例如外设初始化代码等
   while (1)
   {
@@ -125,11 +121,11 @@ int main(void)
     detectBlockStable();
     if (Push_State && !Stable_State)
     {
-      Kinematic_Analysis(getCenterOffset_XAxis(), getCenterOffset_YAxis(), 0);
+      // Kinematic_Analysis(getCenterOffset_XAxis(), getCenterOffset_YAxis(), 0);
     }
     else if (Stable_State)
     {
-      Brake();
+      // Brake();
     }
     ips200_show_int(0, 0, Push_State, 3);               // 显示接收到的数据
     ips200_show_int(0, 16, Stable_State, 3);            // 显示接收到的数据
@@ -164,16 +160,22 @@ void pit_handler(void)
 
   encoder_data_B = encoder_get_count(ENCODER_2);  // 获取编码器计数
   encoder_data_L = -encoder_get_count(ENCODER_3); // 获取编码器计数   保证向前走的轮子为正值
-  if (Push_State && !Stable_State)                // 要推并且不稳定
+  // if (Push_State && !Stable_State)                // 要推并且不稳定
   {
     int Left_Speed = PID_L(Calculate_Speed_Left, encoder_data_L);
     int Right_Speed = PID_R(Calculate_Speed_Right, encoder_data_R);
     int Buttom_Speed = PID_B(Calculate_Speed_Buttom, encoder_data_B);
-    //  setLeftMotorSpeed(Left_Speed);
-    //  setRightMotorSpeed(Right_Speed);
-    //  setServoAngle(Buttom_Speed);
+    setLeftMotorSpeed(Left_Speed);
+    setRightMotorSpeed(Right_Speed);
+    setServoAngle(Buttom_Speed);
   }
 
+  int Left_Speed = PID_L(Calculate_Speed_Left, encoder_data_L);
+  int Right_Speed = PID_R(Calculate_Speed_Right, encoder_data_R);
+  int Buttom_Speed = PID_B(Calculate_Speed_Buttom, encoder_data_B);
+  setLeftMotorSpeed(Left_Speed);
+  setRightMotorSpeed(Right_Speed);
+  setServoAngle(Buttom_Speed);
   //  Vofa_data(Left_Speed, BaseSpeed, encoder_data_L, 0, 0); // 发送数据到串口
   // Vofa_data(Right_Speed, -50, encoder_data_R, 0, 0); // 发送数据到串口
   // Vofa_data(Buttom_Speed, BaseSpeed, encoder_data_B, 0, 0);
@@ -196,12 +198,12 @@ void openmv_rx_handler(void)
     fifo_write_buffer(&openmv_uart_data_fifo, &get_data, 1);
   }
 
-  if (0x02 == get_data)
+  if (102 == get_data)
   {
     // 读取第1个数据，用于判断帧头，使用完清除此数据
     temp_length = 1;
     fifo_read_buffer(&openmv_uart_data_fifo, fifo_get_data, &temp_length, FIFO_READ_AND_CLEAN);
-    if (0x01 == fifo_get_data[0])
+    if (101 == fifo_get_data[0])
     {
       // 读取8个数据，用于获取目标数据，然后转移到结构体数组中
       uint8 odn_num = 0;

@@ -135,14 +135,4 @@
 #include "gyro.h"
 #include "push.h"
 //===================================================用户自定义文件===================================================
-
-typedef struct
-{
-    uint8_t res_x1;
-    uint8_t res_y1;
-    uint8_t res_x2;
-    uint8_t res_y2;
-} od_result_t;
-
-extern volatile od_result_t od_result[10];
 #endif
