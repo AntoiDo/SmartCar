@@ -157,9 +157,9 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>126</LineNumber>
+          <LineNumber>93</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>-2147429136</Address>
+          <Address>-2147443556</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -168,23 +168,7 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>..\user\src\main.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\rt1064\../user/src/main.c\126</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
-          <LineNumber>187</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>-2147424496</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\user\src\main.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\rt1064\../user/src/main.c\187</Expression>
+          <Expression>\\rt1064\../user/src/main.c\93</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>

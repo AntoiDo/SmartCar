@@ -100,8 +100,8 @@ void setRightMotorSpeed(int givenSpeed)
 void Kinematic_Analysis(float Vx, float Vy, float V_angle)
 {
     Calculate_Speed_Buttom = Vx + L_PARAMETER * V_angle / (2 * PI) * 60;
-    Calculate_Speed_Left = -X_PARAMETER * Vx + Y_PARAMETER * Vy + L_PARAMETER * V_angle / (2 * PI) * 60;
-    Calculate_Speed_Right = -X_PARAMETER * Vx - Y_PARAMETER * Vy + L_PARAMETER * V_angle / (2 * PI) * 60;
+    Calculate_Speed_Right = -X_PARAMETER * Vx + Y_PARAMETER * Vy + L_PARAMETER * V_angle / (2 * PI) * 60;
+    Calculate_Speed_Left = -X_PARAMETER * Vx - Y_PARAMETER * Vy + L_PARAMETER * V_angle / (2 * PI) * 60;
     Calculate_Speed_Left = -Calculate_Speed_Left;
 }
 

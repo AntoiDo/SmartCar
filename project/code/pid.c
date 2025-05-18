@@ -93,9 +93,9 @@ int PID_L(int setSpeed, int realSpeed)
     volatile static int ek, ek1, lastek; // e(k), e(k-1)
 
     // 空转时候kp=1.5，ki=0.1的时候效果很好
-    float kp = 50;
+    float kp = 60;
     float ki = 0.6;
-    float kd = 0;
+    float kd = 1;
     lastek = ek1;
     ek1 = ek;
     ek = setSpeed - realSpeed;
@@ -124,9 +124,9 @@ int PID_R(int setSpeed, int realSpeed)
     volatile static int out_increment;
     volatile static int ek, ek1, lastek; // e(k), e(k-1)
 
-    float kp = 50;
-    float ki = 0.5;
-    float kd = 0;
+    float kp = 60;
+    float ki = 0.6;
+    float kd = 1;
     lastek = ek1;
     ek1 = ek;
     ek = setSpeed - realSpeed;

@@ -16,8 +16,8 @@ typedef struct
 
 extern volatile od_result_t od_result[10];
 
-extern uint8 Push_State;
-extern uint8 Stable_State;
+extern bool Push_State;
+extern bool Stable_State;
 
 void detectRedBlock();
 void detectBlockStable();
