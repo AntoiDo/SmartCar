@@ -13,6 +13,9 @@
         "pid.h": "c",
         "uart.h": "c",
         "cmath": "c",
-        "push.h": "c"
+        "push.h": "c",
+        "strategy.h": "c",
+        "global.h": "c",
+        "switch.h": "c"
     }
 }

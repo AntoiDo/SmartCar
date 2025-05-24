@@ -529,6 +529,26 @@
               <FileType>5</FileType>
               <FilePath>..\code\push.h</FilePath>
             </File>
+            <File>
+              <FileName>strategy.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\strategy.c</FilePath>
+            </File>
+            <File>
+              <FileName>strategy.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\code\strategy.h</FilePath>
+            </File>
+            <File>
+              <FileName>global.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\global.c</FilePath>
+            </File>
+            <File>
+              <FileName>global.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\code\global.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

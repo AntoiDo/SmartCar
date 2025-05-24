@@ -119,6 +119,19 @@ void Brake()
 }
 
 /**
+ * @brief  设置所有电机的速度
+ * @param  left 左轮速度
+ * @param  right 右轮速度
+ * @param  servo 中间轮速度
+ */
+void setAllMotorSpeed(int left, int right, int servo)
+{
+    setLeftMotorSpeed(left);
+    setRightMotorSpeed(right);
+    setServoAngle(servo);
+}
+
+/**
  * @deprecated 没用的版本
  */
 void setMotorSpeed(int stdSpeed, int speedBias)

@@ -52,8 +52,8 @@ int PD_Camera(float error)
 {
     volatile static float Current_Error, Prev_Error;
 
-    volatile float Servo_P = 1.67;
-    volatile float Servo_D = 8.25; // 1.632  0.75     8.25
+    volatile float Servo_P = 3;
+    volatile float Servo_D = 1; // 1.632  0.75     8.25
 
     float ek, ek1; // e(k), e(k-1)
 

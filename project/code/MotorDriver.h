@@ -27,6 +27,7 @@ void setMotorSpeed(int stdSpeed, int speedBias);
 void setLeftMotorSpeed(int givenSpeed);
 void setRightMotorSpeed(int givenSpeed);
 void setServoAngle(int angle);
+void setAllMotorSpeed(int left, int right, int servo);
 
 void Brake();
 void Kinematic_Analysis(float Vx, float Vy, float V_angle);

@@ -16,5 +16,6 @@
 #define ENCODER_3_B (QTIMER2_ENCODER2_CH2_C25)
 
 void encoderInit();
-
+void clearAllEncoderCount();
+void getAllEncoderCount();
 #endif

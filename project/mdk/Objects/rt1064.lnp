@@ -13,6 +13,8 @@
 ".\objects\uart.o"
 ".\objects\gyro.o"
 ".\objects\push.o"
+".\objects\strategy.o"
+".\objects\global.o"
 ".\objects\zf_common_clock.o"
 ".\objects\zf_common_debug.o"
 ".\objects\zf_common_fifo.o"

@@ -22,28 +22,15 @@ Dialog DLL:      TCM.DLL V1.56.4.0
  
 <h2>Project:</h2>
 E:\CAR\RT1064\carDemoBasic\project\mdk\rt1064.uvprojx
-Project File Date:  05/17/2025
+Project File Date:  05/20/2025
 
 <h2>Output:</h2>
 *** Using Compiler 'V6.19', folder: 'D:\Program Files(x86)\Keil_v5\ARM\ARMCLANG\Bin'
 Build target 'nor_sdram_zf_dtcm'
-../user/src/main.c(102): warning: incompatible pointer types passing 'float[6]' to parameter of type 'const uint8 *' (aka 'const unsigned char *') [-Wincompatible-pointer-types]
-  uart_write_buffer(UART_INDEX, data, sizeof(float) * 6); // ͨ<B9><FD><B4><AE><BF>ڴ<AB><CA><E4><CA><FD><BE>ݣ<AC>ǰ<C3>濪<B6><E0><B4><F3><B5><C4><CA><FD><D7>飬<BA><F3><C3><E6>ռ<B6><E0><B4><U+F3936><C8>
-                                ^~~~
-../../libraries/zf_driver\zf_driver_uart.h(110): note: passing argument to parameter 'buff' here
-void    uart_write_buffer                   (uart_index_enum uartn, const uint8 *buff, uint32 len);
-                                                                                 ^
-../user/src/main.c(174): warning: passing 'volatile KEY_MSG_t *' to parameter of type 'KEY_MSG_t *' discards qualifiers [-Wincompatible-pointer-types-discards-qualifiers]
-  if (get_key_msg(&keymsg) == 1)
-                  ^~~~~~~
-../code\key.h(50): note: passing argument to parameter 'keymsg' here
-uint8 get_key_msg(KEY_MSG_t *keymsg); // <BB><F1>ȡ<B0><B4><BC><FC><CF><FB>Ϣ<A3><AC><B7><B5><BB><D8>1<B1><ED>ʾ<D3>а<B4><BC><FC><CF><FB>Ϣ<A3><AC>0Ϊ<CE>ް<B4><BC><FC><CF><FB>Ϣ
-                             ^
-2 warnings generated.
-compiling main.c...
+compiling pid.c...
 linking...
-Program Size: Code=80256 RO-data=8368 RW-data=608 ZI-data=52784  
-".\Objects\rt1064.axf" - 0 Error(s), 2 Warning(s).
+Program Size: Code=93272 RO-data=8428 RW-data=620 ZI-data=53404  
+".\Objects\rt1064.axf" - 0 Error(s), 0 Warning(s).
 
 <h2>Software Packages used:</h2>
 

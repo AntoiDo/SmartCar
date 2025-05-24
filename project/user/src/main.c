@@ -41,10 +41,10 @@
 
 // 本例程是开源库移植用空工程
 
-int16 encoder_data_R = 0;
-int16 encoder_data_B = 0;
-int16 encoder_data_L = 0;
-
+int16 cameraErr = 0;
+int Push_Count = 0;
+int BaseSpeed = 200;
+int COLOR_CHANGE = 0;
 #define UART_INDEX (DEBUG_UART_INDEX)
 #define UART_BAUDRATE (DEBUG_UART_BAUDRATE)
 #define UART_TX_PIN (DEBUG_UART_TX_PIN)
@@ -52,25 +52,27 @@ int16 encoder_data_L = 0;
 
 void error_handler(void)
 {
-  if (!Push_State && !Stable_State && !FJ_Angle && !encoder_data_L && !encoder_data_R && !encoder_data_B)
+  if (car_state == STATE_TRACKING &&
+      !FJ_Angle &&
+      !encoder_data.encoder_data_L &&
+      !encoder_data.encoder_data_R &&
+      !encoder_data.encoder_data_B)
   {
     return;
   }
   ips200_show_string(0, 0, "error");
   while (1)
   {
-    ips200_show_string(0, 16, "Push_State");
-    ips200_show_int(128, 16, Push_State, 3);
-    ips200_show_string(0, 32, "Stable_State");
-    ips200_show_int(128, 32, Stable_State, 3);
+    ips200_show_string(0, 0, "car_state");
+    ips200_show_int(128, 0, car_state, 3);
     ips200_show_string(0, 48, "FJ_Angle");
     ips200_show_int(128, 48, FJ_Angle, 3);
     ips200_show_string(0, 64, "encoder_data_L");
-    ips200_show_int(128, 64, encoder_data_L, 3);
+    ips200_show_int(128, 64, encoder_data.encoder_data_L, 3);
     ips200_show_string(0, 80, "encoder_data_R");
-    ips200_show_int(128, 80, encoder_data_R, 3);
+    ips200_show_int(128, 80, encoder_data.encoder_data_R, 3);
     ips200_show_string(0, 96, "encoder_data_B");
-    ips200_show_int(128, 96, encoder_data_B, 3);
+    ips200_show_int(128, 96, encoder_data.encoder_data_B, 3);
   }
 }
 /**
@@ -102,14 +104,12 @@ void Vofa_data(int data1, int data2, int data3, int data4, int data5, int data6)
   uart_write_buffer(UART_INDEX, data, sizeof(float) * 6); // 通过串口传输数据，前面开多大的数组，后面占多大长度
   uart_write_buffer(UART_INDEX, tail, 4);                 // 结尾固定的数据包尾
 }
-
+int threshold = 0;
 int main(void)
 {
   clock_init(SYSTEM_CLOCK_600M); // 不可删除
   debug_init();                  // 调试端口初始化
   Key_init(KEY_MAX);
-  Push_State = 0; // 推状态
-  Stable_State = 0;
   switch_init();
   BEEP_init();
   encoderInit();
@@ -134,34 +134,71 @@ int main(void)
   // 此处编写用户代码 例如外设初始化代码等
   while (1)
   {
-    detectRedBlock();
-    detectBlockStable();
-    if (Push_State && !Stable_State) // 要推并且不稳定
+    // Vofa_data(car_state, FJ_Angle, 0, 0, 0, 0);
+    // detectRedBlock(); // 检测红色方块
+    if (car_state == STATE_TRACKING)
+    {
+      if (mt9v03x_finish_flag)
+      {
+        threshold = otsuThreshold(mt9v03x_image[0], MT9V03X_W, MT9V03X_H);
+        setImageTwoValue(threshold); // 二值化
+        mt9v03x_finish_flag = 0;     // 清除标志位
+      }
+      longestWhiteColumnSearchLines(); // 识别白线
+      crossDetect();                   // 识别十字路口
+      islandDetect();
+      cameraErr = PD_Camera(cameraErrorSum());
+    }
+    else if (car_state == STATE_COLOR_DETECT)
     {
       Kinematic_Analysis(getCenterOffset_XAxis(), getCenterOffset_YAxis(), 0);
+      detectBlockStable();
+      // if (++COLOR_CHANGE > 200)
+      // {
+      //   car_state = STATE_ROTATE;
+      // }
     }
-    if (Stable_State)
+    else if (car_state == STATE_ROTATE)
     {
+      COLOR_CHANGE = 0;
       Brake();
       system_delay_ms(1000);
       while (abs(FJ_Angle) < 85)
       {
-        int reverse_power = PID_B(100, encoder_data_B);
-        setServoAngle(reverse_power);
+        continue;
+      }
+      car_state = STATE_PUSH;
+      clearGyroscopeAngle();
+      system_delay_ms(500);
+    }
+    else if (car_state == STATE_PUSH)
+    {
+      while (Push_Count < 50)
+      {
+        Push_Count++;
+      }
+      Brake();
+      car_state = STATE_RECOVER;
+    }
+    else if (car_state == STATE_RECOVER)
+    {
+      while (FJ_Angle != 0)
+      {
+        continue;
       }
     }
-    ips200_show_int(0, 0, Push_State, 3);               // 显示接收到的数据
-    ips200_show_int(0, 16, Stable_State, 3);            // 显示接收到的数据
-    ips200_show_int(0, 32, getCenterOffset_XAxis(), 3); // 显示接收到的数据
-    ips200_show_int(0, 48, getCenterOffset_YAxis(), 3); // 显示接收到的数据
+    // judgeCarStrategy();
+    // ips200_show_int(0, 0, Push_State, 3);               // 显示接收到的数据
+    // ips200_show_int(0, 16, Stable_State, 3);            // 显示接收到的数据
+    // ips200_show_int(0, 32, getCenterOffset_XAxis(), 3); // 显示接收到的数据
+    // ips200_show_int(0, 48, getCenterOffset_YAxis(), 3); // 显示接收到的数据
 
-    ips200_show_uint(0, 64, od_result[0].res_x1, 3);                                                                                // 显示接收到的数据
-    ips200_show_uint(0, 80, od_result[0].res_y1, 3);                                                                                // 显示接收到的数据
-    ips200_show_uint(0, 96, od_result[0].res_x2, 3);                                                                                // 显示接收到的数据
-    ips200_show_uint(0, 112, od_result[0].res_y2, 3);                                                                               // 显示接收到的数据
-    Vofa_data(Calculate_Speed_Left, Calculate_Speed_Right, Calculate_Speed_Buttom, encoder_data_L, encoder_data_R, encoder_data_B); // 发送数据到串口
-    ips200_show_int(0, 128, FJ_Angle, 3);
-
+    // ips200_show_uint(0, 64, od_result[0].res_x1, 3);                                                                                // 显示接收到的数据
+    // ips200_show_uint(0, 80, od_result[0].res_y1, 3);                                                                                // 显示接收到的数据
+    // ips200_show_uint(0, 96, od_result[0].res_x2, 3);                                                                                // 显示接收到的数据
+    // ips200_show_uint(0, 112, od_result[0].res_y2, 3);                                                                               // 显示接收到的数据
+    // ips200_show_int(0, 128, FJ_Angle, 3);
+    ips200_show_int(0, 144, cameraErr, 3);
     // 此处编写需要循环执行的代码
 
     // 此处编写需要循环执行的代码
@@ -180,26 +217,46 @@ void pit_handler(void)
     BEEP_off();
   }
 
-  encoder_data_R = encoder_get_count(ENCODER_1);  // 获取编码器计数
-  encoder_data_B = encoder_get_count(ENCODER_2);  // 获取编码器计数
-  encoder_data_L = -encoder_get_count(ENCODER_3); // 获取编码器计数   保证向前走的轮子为正值
-  if (Push_State && !Stable_State)
+  getAllEncoderCount();
+  if (car_state == STATE_TRACKING)
   {
-    int Left_Speed = PID_L(Calculate_Speed_Left * 2, encoder_data_L);
-    int Right_Speed = PID_R(Calculate_Speed_Right * 2, encoder_data_R);
-    int Buttom_Speed = PID_B(Calculate_Speed_Buttom * 2, encoder_data_B);
-    setLeftMotorSpeed(Left_Speed);
-    setRightMotorSpeed(Right_Speed);
-    setServoAngle(Buttom_Speed);
+    motor_speed.Left_Speed = PID_L(BaseSpeed - cameraErr, encoder_data.encoder_data_L);
+    motor_speed.Right_Speed = PID_R(BaseSpeed + cameraErr, encoder_data.encoder_data_R);
   }
-  encoder_clear_count(ENCODER_1); // 清空编码器计数
-  encoder_clear_count(ENCODER_2); // 清空编码器计数
-  encoder_clear_count(ENCODER_3); // 清空编码器计数
-  if (Push_State && Stable_State)
+  else if (car_state == STATE_COLOR_DETECT)
+  {
+    motor_speed.Left_Speed = PID_L(Calculate_Speed_Left * 2, encoder_data.encoder_data_L);
+    motor_speed.Right_Speed = PID_R(Calculate_Speed_Right * 2, encoder_data.encoder_data_R);
+    motor_speed.Buttom_Speed = PID_B(Calculate_Speed_Buttom * 2, encoder_data.encoder_data_B);
+  }
+  else if (car_state == STATE_ROTATE || car_state == STATE_PUSH)
   {
     gyroscopeGetData();
     getGyroscopeAngle(); // 获取陀螺仪角度
+    if (car_state == STATE_ROTATE)
+    {
+      motor_speed.Left_Speed = 0;
+      motor_speed.Right_Speed = 0;
+      motor_speed.Buttom_Speed = PID_B(BaseSpeed, encoder_data.encoder_data_B);
+    }
+    else
+    {
+      motor_speed.Left_Speed = PID_L(BaseSpeed, encoder_data.encoder_data_L);
+      motor_speed.Right_Speed = PID_R(BaseSpeed, encoder_data.encoder_data_R);
+      motor_speed.Buttom_Speed = 0;
+    }
   }
+  else if (car_state == STATE_RECOVER)
+  {
+    gyroscopeGetData();
+    getGyroscopeAngle(); // 获取陀螺仪角度
+    motor_speed.Left_Speed = PID_L(-BaseSpeed, encoder_data.encoder_data_L);
+    motor_speed.Right_Speed = PID_R(-BaseSpeed, encoder_data.encoder_data_R);
+    motor_speed.Buttom_Speed = PID_B(-BaseSpeed, encoder_data.encoder_data_B);
+  }
+  setAllMotorSpeed(motor_speed.Left_Speed, motor_speed.Right_Speed, motor_speed.Buttom_Speed); // 设置电机速度
+  // Vofa_data(motor_speed.Left_Speed, motor_speed.Right_Speed, encoder_data.encoder_data_L, encoder_data.encoder_data_R, cameraErr, 0); // 发送数据到串口
+  clearAllEncoderCount();
 }
 
 void openmv_rx_handler(void)

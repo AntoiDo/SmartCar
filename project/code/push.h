@@ -2,7 +2,7 @@
 #define PUSH_H
 
 #include "zf_common_headfile.h"
-
+#include "global.h"
 #define PIC_WIDTH (160)
 #define PIC_HEIGHT (120)
 
@@ -16,12 +16,12 @@ typedef struct
 
 extern volatile od_result_t od_result[10];
 
-extern bool Push_State;
-extern bool Stable_State;
-
 void detectRedBlock();
 void detectBlockStable();
 int8 getCenterOffset_XAxis();
 int8 getCenterOffset_YAxis();
+
+// void rotateCar(Rotate_Direction direction);
+
 
 #endif

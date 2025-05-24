@@ -1,15 +1,13 @@
 #include "push.h"
 
-bool Push_State = 0;   // 当检测到红色物块相关参数进入阈值范围时设置为1
-bool Stable_State = 0; // 当相关参数都在可控范围内就认为稳定了
-uint8 NOISE = 11;      // 判断状态的噪声范围
+uint8 NOISE = 11; // 判断状态的噪声范围
 
 volatile od_result_t od_result[10];
 
 /**
  * @brief   检测红色方块
  * @param   none
- * @note    Push_State = 1 代表检测到红色方块
+ * @note    car_state == COLOR_DETECT 代表检测到红色方块
  */
 void detectRedBlock()
 {
@@ -18,12 +16,12 @@ void detectRedBlock()
     uint8 pic_height = od_result[0].res_y2 - od_result[0].res_y1; // 物块高度
     // 判定条件1: y1 >= 45 && y2 >= 88 超过十次, 且没有进入push状态(version1)
     // 判定条件1:
-    if (!Push_State && (od_result[0].res_y1 >= 37) && (od_result[0].res_y2 >= 65))
+    if (car_state == STATE_TRACKING && (od_result[0].res_y1 >= 37) && (od_result[0].res_y2 >= 65))
     {
         count++;
         if (count > 10)
         {
-            Push_State = 1;
+            car_state = STATE_COLOR_DETECT;
             Brake();
             count = 0;
         }
@@ -55,14 +53,32 @@ int8 getCenterOffset_YAxis()
     return 67 - block_weight;
 }
 
+/**
+ * @brief   检测车子识别到的方块是否稳定
+ */
 void detectBlockStable()
 {
-    if (abs(getCenterOffset_XAxis()) < NOISE && abs(getCenterOffset_YAxis()) < NOISE && od_result[0].res_y2 >= 97)
+    if (car_state == STATE_COLOR_DETECT &&
+        (getCenterOffset_XAxis()) < NOISE &&
+        abs(getCenterOffset_YAxis()) < NOISE &&
+        od_result[0].res_y2 >= 97)
     {
-        Stable_State = 1;
+        car_state = STATE_ROTATE;
+    }
+}
+
+void rotateCar(Rotate_Direction direction)
+{
+    if (direction == CLOCKWISE)
+    {
+        setServoAngle(PID_B(100, encoder_data.encoder_data_B)); // 车子向右转
+    }
+    else if (direction == COUNTERCLOCKWISE)
+    {
+        setServoAngle(PID_B(-100, encoder_data.encoder_data_B)); // 车子向左转
     }
     else
     {
-        Stable_State = 0;
+        setServoAngle(0); // 车子不转
     }
 }
