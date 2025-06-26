@@ -1,4 +1,4 @@
-./objects/push.o: ..\code\push.c ..\code\push.h \
+./objects/global.o: ..\code\global.c ..\code\global.h \
   ..\..\libraries\zf_common\zf_common_headfile.h \
   D:\Program\ Files(x86)\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdio.h \
   D:\Program\ Files(x86)\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdint.h \
@@ -104,10 +104,9 @@
   ..\..\libraries\sdk\drives\fsl_usdhc.h \
   ..\..\libraries\components\sdmmc\common\fsl_sdmmc_spec.h \
   ..\..\libraries\components\sdmmc\sdmmc_config.h \
-  ..\..\libraries\sdk\board\clock_config.h ..\code\global.h \
-  ..\code\MotorDriver.h \
+  ..\..\libraries\sdk\board\clock_config.h ..\code\MotorDriver.h \
   D:\Program\ Files(x86)\Keil_v5\ARM\ARMCLANG\Bin\..\include\math.h \
   ..\code\key.h ..\code\menu.h ..\code\switch.h \
   ..\code\camera_settings.h ..\code\image.h ..\code\island.h \
   ..\code\pid.h ..\code\encoder.h ..\code\uart.h ..\code\gyro.h \
-  ..\code\strategy.h ..\code\spi_sd.h
+  ..\code\push.h ..\code\strategy.h ..\code\spi_sd.h

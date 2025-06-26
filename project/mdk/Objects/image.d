@@ -110,4 +110,4 @@
   ..\code\key.h ..\code\menu.h ..\code\switch.h \
   ..\code\camera_settings.h ..\code\island.h ..\code\pid.h \
   ..\code\encoder.h ..\code\uart.h ..\code\gyro.h ..\code\push.h \
-  ..\code\strategy.h
+  ..\code\strategy.h ..\code\spi_sd.h

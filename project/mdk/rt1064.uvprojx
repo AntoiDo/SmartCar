@@ -549,6 +549,16 @@
               <FileType>5</FileType>
               <FilePath>..\code\global.h</FilePath>
             </File>
+            <File>
+              <FileName>spi_sd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\spi_sd.c</FilePath>
+            </File>
+            <File>
+              <FileName>spi_sd.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\code\spi_sd.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

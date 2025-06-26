@@ -12,5 +12,10 @@ Motor_Speed motor_speed = {
     .Buttom_Speed = 0,
 };
 
+Encoder_Integration encoder_integration = {
+    .last_count = 0,
+    .current_count = 0,
+};
+
 Car_State car_state = STATE_TRACKING;          // 车子状态
 Rotate_Direction rotate_direction = CLOCKWISE; // 车子转向

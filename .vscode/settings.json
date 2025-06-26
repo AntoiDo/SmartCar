@@ -16,6 +16,7 @@
         "push.h": "c",
         "strategy.h": "c",
         "global.h": "c",
-        "switch.h": "c"
+        "switch.h": "c",
+        "spi_sd.h": "c"
     }
 }

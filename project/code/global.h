@@ -34,9 +34,16 @@ typedef enum
     STATE_RECOVER       // 返回循迹的过渡状态
 } Car_State;
 
+typedef struct
+{
+    int last_count;    // 上一次的编码器计数
+    int current_count; // 当前的编码器计数
+} Encoder_Integration;
+
 extern Encoder_Data encoder_data;
 extern Motor_Speed motor_speed;
 extern Car_State car_state;
 extern Rotate_Direction rotate_direction;
+extern Encoder_Integration encoder_integration;
 
 #endif

@@ -109,4 +109,4 @@
   D:\Program\ Files(x86)\Keil_v5\ARM\ARMCLANG\Bin\..\include\math.h \
   ..\code\key.h ..\code\menu.h ..\code\camera_settings.h ..\code\image.h \
   ..\code\island.h ..\code\pid.h ..\code\encoder.h ..\code\uart.h \
-  ..\code\gyro.h ..\code\push.h ..\code\strategy.h
+  ..\code\gyro.h ..\code\push.h ..\code\strategy.h ..\code\spi_sd.h

@@ -50,6 +50,10 @@ int COLOR_CHANGE = 0;
 #define UART_TX_PIN (DEBUG_UART_TX_PIN)
 #define UART_RX_PIN (DEBUG_UART_RX_PIN)
 
+int EncoderLeftSum = 0;   // 编码器左数据和
+int EncoderRightSum = 0;  // 编码器右数据和
+int EncoderButtomSum = 0; // 编码器中数据和
+
 void error_handler(void)
 {
   if (car_state == STATE_TRACKING &&
@@ -132,75 +136,66 @@ int main(void)
   MainMenu_Set();
   error_handler();
   // 此处编写用户代码 例如外设初始化代码等
+
   while (1)
   {
+
     // Vofa_data(car_state, FJ_Angle, 0, 0, 0, 0);
     // detectRedBlock(); // 检测红色方块
-    if (car_state == STATE_TRACKING)
-    {
-      if (mt9v03x_finish_flag)
-      {
-        threshold = otsuThreshold(mt9v03x_image[0], MT9V03X_W, MT9V03X_H);
-        setImageTwoValue(threshold); // 二值化
-        mt9v03x_finish_flag = 0;     // 清除标志位
-      }
-      longestWhiteColumnSearchLines(); // 识别白线
-      crossDetect();                   // 识别十字路口
-      islandDetect();
-      cameraErr = PD_Camera(cameraErrorSum());
-    }
-    else if (car_state == STATE_COLOR_DETECT)
-    {
-      Kinematic_Analysis(getCenterOffset_XAxis(), getCenterOffset_YAxis(), 0);
-      detectBlockStable();
-      // if (++COLOR_CHANGE > 200)
-      // {
-      //   car_state = STATE_ROTATE;
-      // }
-    }
-    else if (car_state == STATE_ROTATE)
-    {
-      COLOR_CHANGE = 0;
-      Brake();
-      system_delay_ms(1000);
-      while (abs(FJ_Angle) < 85)
-      {
-        continue;
-      }
-      car_state = STATE_PUSH;
-      clearGyroscopeAngle();
-      system_delay_ms(500);
-    }
-    else if (car_state == STATE_PUSH)
-    {
-      while (Push_Count < 50)
-      {
-        Push_Count++;
-      }
-      Brake();
-      car_state = STATE_RECOVER;
-    }
-    else if (car_state == STATE_RECOVER)
-    {
-      while (FJ_Angle != 0)
-      {
-        continue;
-      }
-    }
+    // if (car_state == STATE_TRACKING)
+    // {
+    //   if (mt9v03x_finish_flag)
+    //   {
+    //     threshold = otsuThreshold(mt9v03x_image[0], MT9V03X_W, MT9V03X_H);
+    //     setImageTwoValue(threshold); // 二值化
+    //     mt9v03x_finish_flag = 0;     // 清除标志位
+    //   }
+    //   longestWhiteColumnSearchLines(); // 识别白线
+    //   crossDetect();                   // 识别十字路口
+    //   islandDetect();
+    //   cameraErr = PD_Camera(cameraErrorSum());
+    // }
+    // else if (car_state == STATE_COLOR_DETECT)
+    // {
+    //   Kinematic_Analysis(getCenterOffset_XAxis(), getCenterOffset_YAxis(), 0);
+    //   detectBlockStable();
+    // }
+    // else if (car_state == STATE_ROTATE)
+    // {
+    //   COLOR_CHANGE = 0;
+    //   Brake();
+    //   system_delay_ms(1000);
+    //   while (abs(FJ_Angle) < 85)
+    //   {
+    //     continue;
+    //   }
+    //   car_state = STATE_PUSH;
+    //   clearGyroscopeAngle();
+    //   system_delay_ms(500);
+    // }
+    // else if (car_state == STATE_PUSH)
+    // {
+    //   while (Push_Count < 50)
+    //   {
+    //     Push_Count++;
+    //   }
+    //   Brake();
+    //   car_state = STATE_RECOVER;
+    // }
+    // else if (car_state == STATE_RECOVER)
+    // {
+    //   while (FJ_Angle != 0)
+    //   {
+    //     continue;
+    //   }
+    // }
+
     // judgeCarStrategy();
-    // ips200_show_int(0, 0, Push_State, 3);               // 显示接收到的数据
-    // ips200_show_int(0, 16, Stable_State, 3);            // 显示接收到的数据
-    // ips200_show_int(0, 32, getCenterOffset_XAxis(), 3); // 显示接收到的数据
-    // ips200_show_int(0, 48, getCenterOffset_YAxis(), 3); // 显示接收到的数据
 
-    // ips200_show_uint(0, 64, od_result[0].res_x1, 3);                                                                                // 显示接收到的数据
-    // ips200_show_uint(0, 80, od_result[0].res_y1, 3);                                                                                // 显示接收到的数据
-    // ips200_show_uint(0, 96, od_result[0].res_x2, 3);                                                                                // 显示接收到的数据
-    // ips200_show_uint(0, 112, od_result[0].res_y2, 3);                                                                               // 显示接收到的数据
-    // ips200_show_int(0, 128, FJ_Angle, 3);
-    ips200_show_int(0, 144, cameraErr, 3);
     // 此处编写需要循环执行的代码
-
+    ips200_show_int(0, 0, EncoderLeftSum, 5);
+    ips200_show_int(0, 16, EncoderRightSum, 5);
+    ips200_show_int(0, 32, EncoderButtomSum, 5);
     // 此处编写需要循环执行的代码
   }
 }
@@ -216,45 +211,56 @@ void pit_handler(void)
   {
     BEEP_off();
   }
-
+  if (keymsg.key == KEY_L && keymsg.status == KEY_DOWN)
+  {
+    EncoderLeftSum = 0;   // 清除左编码器数据和
+    EncoderRightSum = 0;  // 清除右编码器数据和
+    EncoderButtomSum = 0; // 清除中编码器数据和
+  }
   getAllEncoderCount();
-  if (car_state == STATE_TRACKING)
-  {
-    motor_speed.Left_Speed = PID_L(BaseSpeed - cameraErr, encoder_data.encoder_data_L);
-    motor_speed.Right_Speed = PID_R(BaseSpeed + cameraErr, encoder_data.encoder_data_R);
-  }
-  else if (car_state == STATE_COLOR_DETECT)
-  {
-    motor_speed.Left_Speed = PID_L(Calculate_Speed_Left * 2, encoder_data.encoder_data_L);
-    motor_speed.Right_Speed = PID_R(Calculate_Speed_Right * 2, encoder_data.encoder_data_R);
-    motor_speed.Buttom_Speed = PID_B(Calculate_Speed_Buttom * 2, encoder_data.encoder_data_B);
-  }
-  else if (car_state == STATE_ROTATE || car_state == STATE_PUSH)
-  {
-    gyroscopeGetData();
-    getGyroscopeAngle(); // 获取陀螺仪角度
-    if (car_state == STATE_ROTATE)
-    {
-      motor_speed.Left_Speed = 0;
-      motor_speed.Right_Speed = 0;
-      motor_speed.Buttom_Speed = PID_B(BaseSpeed, encoder_data.encoder_data_B);
-    }
-    else
-    {
-      motor_speed.Left_Speed = PID_L(BaseSpeed, encoder_data.encoder_data_L);
-      motor_speed.Right_Speed = PID_R(BaseSpeed, encoder_data.encoder_data_R);
-      motor_speed.Buttom_Speed = 0;
-    }
-  }
-  else if (car_state == STATE_RECOVER)
-  {
-    gyroscopeGetData();
-    getGyroscopeAngle(); // 获取陀螺仪角度
-    motor_speed.Left_Speed = PID_L(-BaseSpeed, encoder_data.encoder_data_L);
-    motor_speed.Right_Speed = PID_R(-BaseSpeed, encoder_data.encoder_data_R);
-    motor_speed.Buttom_Speed = PID_B(-BaseSpeed, encoder_data.encoder_data_B);
-  }
-  setAllMotorSpeed(motor_speed.Left_Speed, motor_speed.Right_Speed, motor_speed.Buttom_Speed); // 设置电机速度
+  /**
+   * 尝试写一下通过编码器积分来记录走过的路程
+   */
+  EncoderLeftSum += encoder_data.encoder_data_L;   // 左编码器数据和
+  EncoderRightSum += encoder_data.encoder_data_R;  // 右编码器数据和
+  EncoderButtomSum += encoder_data.encoder_data_B; // 中编码器数据和
+  // if (car_state == STATE_TRACKING)
+  // {
+  //  motor_speed.Left_Speed = PID_L(BaseSpeed - cameraErr, encoder_data.encoder_data_L);
+  //  motor_speed.Right_Speed = PID_R(BaseSpeed + cameraErr, encoder_data.encoder_data_R);
+  // }
+  // else if (car_state == STATE_COLOR_DETECT)
+  // {
+  //   motor_speed.Left_Speed = PID_L(Calculate_Speed_Left * 2, encoder_data.encoder_data_L);
+  //   motor_speed.Right_Speed = PID_R(Calculate_Speed_Right * 2, encoder_data.encoder_data_R);
+  //   motor_speed.Buttom_Speed = PID_B(Calculate_Speed_Buttom * 2, encoder_data.encoder_data_B);
+  // }
+  // else if (car_state == STATE_ROTATE || car_state == STATE_PUSH)
+  // {
+  //   gyroscopeGetData();
+  //   getGyroscopeAngle(); // 获取陀螺仪角度
+  //   if (car_state == STATE_ROTATE)
+  //   {
+  //     motor_speed.Left_Speed = 0;
+  //     motor_speed.Right_Speed = 0;
+  //     motor_speed.Buttom_Speed = PID_B(BaseSpeed, encoder_data.encoder_data_B);
+  //   }
+  //   else
+  //   {
+  //     motor_speed.Left_Speed = PID_L(BaseSpeed, encoder_data.encoder_data_L);
+  //     motor_speed.Right_Speed = PID_R(BaseSpeed, encoder_data.encoder_data_R);
+  //     motor_speed.Buttom_Speed = 0;
+  //   }
+  // }
+  // else if (car_state == STATE_RECOVER)
+  // {
+  //   gyroscopeGetData();
+  //   getGyroscopeAngle(); // 获取陀螺仪角度
+  //   // TODO: 推完之后怎么回到赛道呢?
+
+  // }
+
+  // setAllMotorSpeed(motor_speed.Left_Speed, motor_speed.Right_Speed, motor_speed.Buttom_Speed); // 设置电机速度
   // Vofa_data(motor_speed.Left_Speed, motor_speed.Right_Speed, encoder_data.encoder_data_L, encoder_data.encoder_data_R, cameraErr, 0); // 发送数据到串口
   clearAllEncoderCount();
 }

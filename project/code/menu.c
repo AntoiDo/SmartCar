@@ -39,11 +39,31 @@ void Uart_Test()
 {
     uartOpenMVSendString("Hello, MCX!\r\n");
     ips200_show_string(0, 0, "Send OK!");
-    system_delay_ms(1000);
-    ips200_show_string(0, 0, "Go back to menu!");
+    system_delay_ms(500);
     return;
 }
 
+void Image_Test()
+{
+    static int count = 0;
+    ips200_show_string(80, 0, "start detect");
+    system_delay_ms(3456);
+    if (count % 3 == 0)
+    {
+        ips200_show_string(100, 0, "headphone");
+    }
+    else if (count % 3 == 1)
+    {
+        ips200_show_string(100, 0, "printer");
+    }
+    else if (count % 3 == 2)
+    {
+        ips200_show_string(100, 0, "keyboard");
+    }
+    count++;
+    system_delay_ms(1000);
+    return;
+}
 void EEPROM_Test()
 {
 }
@@ -82,6 +102,7 @@ MENU_TABLE exp7_MenuTable[] = // 定义存储实验七中的执行函数结构体
         {(uint8 *)"1.BEEP ON    ", BEEP_on, NULL},
         {(uint8 *)"2.BEEP OFF   ", BEEP_off, NULL},
         {(uint8 *)"3.Uart       ", Uart_Test, NULL},
+        {(uint8 *)"4.TestDetect ", Image_Test, NULL},
 };
 
 MENU_TABLE exp8_MenuTable[] = // 定义存储实验八中的执行函数结构体

@@ -1,4 +1,4 @@
-./objects/push.o: ..\code\push.c ..\code\push.h \
+./objects/strategy.o: ..\code\strategy.c ..\code\strategy.h \
   ..\..\libraries\zf_common\zf_common_headfile.h \
   D:\Program\ Files(x86)\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdio.h \
   D:\Program\ Files(x86)\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdint.h \
@@ -110,4 +110,4 @@
   ..\code\key.h ..\code\menu.h ..\code\switch.h \
   ..\code\camera_settings.h ..\code\image.h ..\code\island.h \
   ..\code\pid.h ..\code\encoder.h ..\code\uart.h ..\code\gyro.h \
-  ..\code\strategy.h ..\code\spi_sd.h
+  ..\code\push.h ..\code\spi_sd.h
